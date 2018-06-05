@@ -19,6 +19,16 @@ nav {
   letter-spacing: 2px;
 }
 
-#articles{
+.titlePage{
+  font-family: 'Bowlby One SC', cursive;
+  font-size: 50px;
+  color: indianred
+}
 
+input{
+  width: 100%;
+}
+
+span{
+  padding-right: 40px;
 }

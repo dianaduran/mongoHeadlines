@@ -61,24 +61,24 @@ app.get("/scrape", function(req, res) {
   });
 
   // Post a book to the mongoose database
-// app.post("/submit", function(req, res) {
-//   // Save the request body as an object called book
-//   var book = req.body;
+app.post("/submit", function(req, res) {
+  // Save the request body as an object called book
+  var book = req.body;
 
-//   book.read = false;
+  book.read = false;
 
-//   // Save the Article object as an entry into the books collection in mongo
-//   db.Article.save(book, function(error, saved) {
-//     // Show any errors
-//     if (error) {
-//       console.log(error);
-//     }
-//     else {
-//       // Otherwise, send the response to the client (for AJAX success function)
-//       res.send(saved);
-//     }
-//   });
-// });
+  // Save the Article object as an entry into the books collection in mongo
+  db.Article.save(book, function(error, saved) {
+    // Show any errors
+    if (error) {
+      console.log(error);
+    }
+    else {
+      // Otherwise, send the response to the client (for AJAX success function)
+      res.send(saved);
+    }
+  });
+});
 
   // Route for getting all Articles from the db
 app.get("/articles", function(req, res) {

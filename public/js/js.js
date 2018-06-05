@@ -13,8 +13,6 @@ $(document).on("click", "#scrape", function(event) {
        data.forEach(function(val){
            createDiv(val.title, val.link);
         });
-
-       
       });
 
       function createDiv(title, link){
@@ -24,4 +22,6 @@ $(document).on("click", "#scrape", function(event) {
         html+="<a href='#' class='btn btn-danger'>Save Article</a></div></div><hr>";  
         $("#articles").append(html);   
     }
+
+
 })

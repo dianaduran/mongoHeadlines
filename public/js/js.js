@@ -11,8 +11,7 @@ $(document).on("click", "#scrape", function(event) {
     $("#articles").empty();
 
     $.get("/scrape").then(function(data) {
-        console.log(data);
-       data.forEach(function(val){
+        data.forEach(function(val){
            createDiv(val.title, val.link);
         });
       });
@@ -53,6 +52,7 @@ $(document).on("click", "#scrape", function(event) {
     });
 
     function createDivSaved(value){
+      
         var html="<div class='col-sm-6'><div class='card'><div class='card-body'>";
         html+="<h5 class='card-title text-center'>"+ value.title+"</h5>";
         html+="<p class='card-text'>"+value.link+".</p>";
@@ -86,10 +86,10 @@ $(document).on("click", "#scrape", function(event) {
     event.preventDefault(); 
     $("#articles").hide();
     $("#savedArticles").show();
-
+    $("#savedArticles").empty();
     $.get("/articles").then(function(data) {
         data.forEach(function(val){
-        createDivSaved(val);
+          createDivSaved(val);
         })
     });
     });
@@ -104,7 +104,6 @@ $(document).on("click", "#scrape", function(event) {
 
        // var thisid = $(this).attr("data-article");
          $.post("/submitNote", note).then(function(data) {
-            console.log(data);
             $("#notas").empty();
             getNotas(data._id);
             $(".noteBody").val("");
@@ -118,7 +117,6 @@ $(document).on("click", "#scrape", function(event) {
             var thisId=$(this).attr("data-target");
             var cadena=thisId.split("#");
             var id=cadena[1];
-            console.log(id);
             $("#notas").empty();
             getNotas(id);
         });
@@ -181,7 +179,12 @@ $(document).on("click", "#scrape", function(event) {
                 url:'/articles/'+thisid,
             }).then(function(data) {
                console.log("delete Article");
-             
+               $.get("/articles").then(function(data) {
+                $("#savedArticles").empty();
+                data.forEach(function(val){
+                createDivSaved(val);
+                })
+            });
             
             });
         });          

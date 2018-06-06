@@ -92,7 +92,7 @@ $(document).on("click", "#scrape", function(event) {
         createDivSaved(val);
         })
     });
-});
+    });
 
           //save note associate to article
     $(document).on("click", ".save-note", function(event) {
@@ -102,9 +102,11 @@ $(document).on("click", "#scrape", function(event) {
             body:$(".noteBody").val()
         }
 
-        var thisid = $(this).attr("data-article");
+       // var thisid = $(this).attr("data-article");
          $.post("/submitNote", note).then(function(data) {
             console.log(data);
+            $("#notas").empty();
+            getNotas(data._id);
             $(".noteBody").val("");
     });
  });
@@ -117,16 +119,73 @@ $(document).on("click", "#scrape", function(event) {
             var cadena=thisId.split("#");
             var id=cadena[1];
             console.log(id);
+            $("#notas").empty();
+            getNotas(id);
+        });
+
+        function getNotas(id){
             $.get("/articlesNote/"+id).then(function(data) {
-                console.log("data with note: "+data[0].notes);
                 var notas=data[0].notes;
                 notas.forEach(function(val){
-                    
-                    
+                   RenderNote(val, id); 
                 })
             });
+        }
 
-        });
+        function RenderNote(val, id){
+
+            var  rowShow = "<tr>" +
+            "<td>" + val.body + "</td>" +
+            "<td>" +
+            "<button class='btn btn-danger borrar' data-id='" + val._id + "' onclick=deleteNote('" + val._id+"','"+ id + "')>" +
+            "<i class='fa fa-trash'></i>" +
+            "</button>" +
+            "</td>" +
+            "</tr>";
+            $("#notas").append(rowShow);
+        }
+
+        function deleteNote(id, idArticle){
+            $.ajax({
+                method:'DELETE',
+                url:'/noteDelete/'+id,
+            }).then(function(data) {
+               console.log("delete");
+               $("#notas").empty();
+               getNotas(idArticle);
+            });
+        }
+
+        //delete article
+        $(document).on("click", ".delete", function(event) {
+            event.preventDefault(); 
+            var thisid = $(this).attr("data-id");
+
+            //1. get notes of articles
+            $.get("/articlesNote/"+thisid).then(function(data) {
+                var notas=data[0].notes;
+                if(notas!=""){
+                    //delete each note
+                    notas.forEach(function(val){  
+                    $.ajax({
+                        method:'DELETE',
+                        url:'/noteDelete/'+val._id,
+                    }).then(function() {
+                        console.log("delete nota");
+                    });
+                });
+              }
+              //always delete article
+              $.ajax({
+                method:'DELETE',
+                url:'/articles/'+thisid,
+            }).then(function(data) {
+               console.log("delete Article");
+             
+            
+            });
+        });          
+    });    
 
 
  

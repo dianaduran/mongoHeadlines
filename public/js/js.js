@@ -9,19 +9,22 @@ $(document).on("click", "#scrape", function(event) {
     $("#savedArticles").hide();
     $("#articles").show();
     $("#articles").empty();
-
+  
     $.get("/scrape").then(function(data) {
+       
         data.forEach(function(val){
            createDiv(val.title, val.link);
         });
       });
+    
 });    
 
       function createDiv(title, link){
-        var html="<div class='col-sm-6' data-title='" + title + "'><div class='card'><div class='card-body'>";
-        html+="<h5 class='card-title text-center'>"+ title+"</h5>";
+        var html="<div class='col-sm-12' data-title='" + title + "'><div class='card'><div class='card-header'>";
+        html+="<h5 class='card-title text-center'>"+ title+"</h5></div>";
+        html+="<div class='card-body'>";
         html+="<p class='card-text'>"+link+".</p>";
-        html+="<a href='/submit' class='btn btn-danger save' data-title='" + title + "' data-link='" + link + "'>Save Article</a></div></div><hr>";  
+        html+="<a href='/submit' class='btn btn-danger save' data-title='" + title + "' data-link='" + link + "'>Save Article</a></div></div></div><hr>";  
         $("#articles").append(html);   
     };
 
@@ -53,11 +56,13 @@ $(document).on("click", "#scrape", function(event) {
 
     function createDivSaved(value){
       
-        var html="<div class='col-sm-6'><div class='card'><div class='card-body'>";
-        html+="<h5 class='card-title text-center'>"+ value.title+"</h5>";
+        var html="<div class='col-sm-12'><div class='card'><div class='card-header'>";
+        html+="<h5 class='card-title text-center'>"+ value.title+"</h5></div>";
+        html+="<div class='card-body'>";
         html+="<p class='card-text'>"+value.link+".</p>";
-        html+="<a href='#' class='btn btn-primary note' data-toggle='modal' data-target='#" + value._id + "'>Article Note</a><span></span>";  
-        html+="<a href='#' class='btn btn-danger delete' data-id='" + value._id + "'>Delete Article</a></div></div><hr>";
+        html+="<div class='text-right'>";
+        html+="<a href='#' class='btn btn-primary note' data-toggle='modal' data-target='#" + value._id + "'>Article Note</a><span class='spnButton'></span>";  
+        html+="<a href='#' class='btn btn-danger delete' data-id='" + value._id + "'>Delete Article</a></div></div></div></div><hr>";
 
        
         // <!-- Modal -->
@@ -69,8 +74,8 @@ $(document).on("click", "#scrape", function(event) {
         modal+='<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
         modal+='<span aria-hidden="true">&times;</span></button></div>';
         modal+='<div class="modal-body">';
-        modal+='<input class="noteBody"></input>';
-        modal+='<div id="notas"></div>';
+        modal+='<input class="noteBody">';
+        modal+='<div class="notas"></div>';
         modal+='</div>';
         modal+='<div class="modal-footer">';
         modal+='<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>'
@@ -97,18 +102,23 @@ $(document).on("click", "#scrape", function(event) {
           //save note associate to article
     $(document).on("click", ".save-note", function(event) {
         event.preventDefault(); 
-
+        
+        
         var note={
             body:$(".noteBody").val()
-        }
+        };
 
-       // var thisid = $(this).attr("data-article");
-         $.post("/submitNote", note).then(function(data) {
-            $("#notas").empty();
-            getNotas(data._id);
-            $(".noteBody").val("");
-    });
- });
+        console.log(note);
+
+        var thisid = $(this).attr("data-article");
+        
+       
+         $.post("/submitNote/"+ thisid, note).then(function(data) {
+           console.log(data);
+          });
+         
+          getNotas(thisid);
+      });
 
 
     //get notes associate to article
@@ -117,21 +127,24 @@ $(document).on("click", "#scrape", function(event) {
             var thisId=$(this).attr("data-target");
             var cadena=thisId.split("#");
             var id=cadena[1];
-            $("#notas").empty();
+           
+            // $("#notas").empty();
             getNotas(id);
         });
 
         function getNotas(id){
+            $(".noteBody").val("");
+           $(".notas").empty();
             $.get("/articlesNote/"+id).then(function(data) {
                 var notas=data[0].notes;
                 notas.forEach(function(val){
-                   RenderNote(val, id); 
+                RenderNote(val, id); 
                 })
             });
         }
 
         function RenderNote(val, id){
-
+        console.log(val, id);
             var  rowShow = "<tr>" +
             "<td>" + val.body + "</td>" +
             "<td>" +
@@ -140,7 +153,8 @@ $(document).on("click", "#scrape", function(event) {
             "</button>" +
             "</td>" +
             "</tr>";
-            $("#notas").append(rowShow);
+            console.log(rowShow);
+            $(".notas").append(rowShow);
         }
 
         function deleteNote(id, idArticle){
@@ -149,7 +163,7 @@ $(document).on("click", "#scrape", function(event) {
                 url:'/noteDelete/'+id,
             }).then(function(data) {
                console.log("delete");
-               $("#notas").empty();
+               $(".notas").empty();
                getNotas(idArticle);
             });
         }

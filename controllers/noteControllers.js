@@ -22,11 +22,11 @@ app.post("/articles/:id", function(req, res) {
   });
 
   // Route for saving a new Note to the db and associating it with a Article
-app.post("/submitNote", function(req, res) {
+app.post("/submitNote/:id", function(req, res) {
     // Create a new Note in the db
     db.Note.create(req.body)
       .then(function(dbNote) {
-        return db.Article.findOneAndUpdate({}, { $push: { notes: dbNote._id } }, { new: true });
+        return db.Article.findOneAndUpdate({_id: req.params.id}, { $push: { notes: dbNote._id } }, { new: true });
       })
       .then(function(dbArticle) {
         // If the User was updated successfully, send it back to the client

@@ -74,7 +74,8 @@ $(document).on("click", "#scrape", function(event) {
         modal+='<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
         modal+='<span aria-hidden="true">&times;</span></button></div>';
         modal+='<div class="modal-body">';
-        modal+='<input class="noteBody">';
+        modal+='<div class="textareaDiv"></div>';
+        // modal+='<textarea></textarea>';
         modal+='<div class="notas"></div>';
         modal+='</div>';
         modal+='<div class="modal-footer">';
@@ -102,19 +103,17 @@ $(document).on("click", "#scrape", function(event) {
           //save note associate to article
     $(document).on("click", ".save-note", function(event) {
         event.preventDefault(); 
-        
-        
-        var note={
-            body:$(".noteBody").val()
-        };
-
-        console.log(note);
-
-        var thisid = $(this).attr("data-article");
-        
        
-         $.post("/submitNote/"+ thisid, note).then(function(data) {
-           console.log(data);
+        var thisid = $(this).attr("data-article");
+       
+        var note={
+            body:$("textarea").val()
+        };
+       
+        console.log(note);
+        $.post("/submitNote/"+ thisid, note).then(function(data) {
+            $("textarea").val("");
+          // console.log(data);
           });
          
           getNotas(thisid);
@@ -127,13 +126,15 @@ $(document).on("click", "#scrape", function(event) {
             var thisId=$(this).attr("data-target");
             var cadena=thisId.split("#");
             var id=cadena[1];
-           
+            $(".textareaDiv").empty();
+            var modal='<textarea></textarea>';
+            $(".textareaDiv").append(modal);
             // $("#notas").empty();
             getNotas(id);
         });
 
         function getNotas(id){
-            $(".noteBody").val("");
+            // $("textarea").val("");
            $(".notas").empty();
             $.get("/articlesNote/"+id).then(function(data) {
                 var notas=data[0].notes;
@@ -144,7 +145,7 @@ $(document).on("click", "#scrape", function(event) {
         }
 
         function RenderNote(val, id){
-        console.log(val, id);
+      
             var  rowShow = "<tr>" +
             "<td>" + val.body + "</td>" +
             "<td>" +
@@ -153,7 +154,6 @@ $(document).on("click", "#scrape", function(event) {
             "</button>" +
             "</td>" +
             "</tr>";
-            console.log(rowShow);
             $(".notas").append(rowShow);
         }
 

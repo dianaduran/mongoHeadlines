@@ -1,9 +1,9 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
-//require("dotenv").config();
 
-var PORT = 3002;
+
+var PORT = process.env.PORT || 3002;
 
 var app = express();
 
@@ -28,13 +28,21 @@ var db = require("./models");
 // Connect to the Mongo DB
 //mongoose.connect("mongodb://localhost/mongoHeadlines");
 
-// If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
-// Set mongoose to leverage built in JavaScript ES6 Promises
-// Connect to the Mongo DB
+//Enviromentally aware DB.
+var db = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+
+//Connecting init and handler
 mongoose.Promise = Promise;
-mongoose.connect(MONGODB_URI);
+mongoose.connect(db, function(error){
+	//Error
+	if(error){
+		console.log(error);
+	}
+	else{
+		console.log("mongoose is connected to mongo");
+	}
+})
 
 
 

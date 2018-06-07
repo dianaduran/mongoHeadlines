@@ -112,7 +112,7 @@ $(document).on("click", "#scrape", function(event) {
        
         console.log(note);
         $.post("/submitNote/"+ thisid, note).then(function(data) {
-            $("textarea").val("");
+           // $("textarea").val("");
           // console.log(data);
           });
          
@@ -122,6 +122,7 @@ $(document).on("click", "#scrape", function(event) {
 
     //get notes associate to article
         $(document).on("click", ".note", function(event) {
+
             event.preventDefault(); 
             var thisId=$(this).attr("data-target");
             var cadena=thisId.split("#");

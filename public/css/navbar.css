@@ -38,3 +38,9 @@ textarea{
 .card{
   margin-bottom: 9px;
 }
+
+.modal-body p{
+  font-size: 34px;
+  font-family: 'Bowlby One SC', cursive;
+  color: indianred;
+}

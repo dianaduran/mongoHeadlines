@@ -14,17 +14,21 @@ $(document).on("click", "#scrape", function(event) {
        
         data.forEach(function(val){
            createDiv(val.title, val.link);
+           
         });
+         var txt="Added "+ $("div.card").length + " new Articles!!";
+         createAlert(txt);
+         $('#exampleModalLong').modal("show");
       });
     
 });    
 
       function createDiv(title, link){
-        var html="<div class='col-sm-12' data-title='" + title + "'><div class='card'><div class='card-header'>";
-        html+="<h5 class='card-title text-center'>"+ title+"</h5></div>";
-        html+="<div class='card-body'>";
-        html+="<p class='card-text'>"+link+".</p>";
-        html+="<a href='/submit' class='btn btn-danger save' data-title='" + title + "' data-link='" + link + "'>Save Article</a></div></div></div><hr>";  
+        var html="<div class='col-sm-12' data-title='" + title + "'><div class='card'><div class='card-header'>"+
+                 "<h5 class='card-title text-center'>"+ title+"</h5></div>"+
+                 "<div class='card-body'>"+
+                 "<p class='card-text'>"+link+".</p>"+
+                 "<a href='/submit' class='btn btn-success save' data-title='" + title + "' data-link='" + link + "'>Save Article</a></div></div></div><hr>";  
         $("#articles").append(html);   
     };
 
@@ -37,7 +41,10 @@ $(document).on("click", "#scrape", function(event) {
 
         $.get("/articles/"+thisTitle).then(function(data) {
            
-            if(data!=null)  alert("This article is already saved in the DataBase!!");
+            if(data!=null)  {
+                createAlert("This article is already saved in the DataBase!!");
+               $('#exampleModalLong').modal("show");
+              }
   
                if(data==null){
 
@@ -47,7 +54,8 @@ $(document).on("click", "#scrape", function(event) {
                 };
      
               $.post("/submit", art).then(function(data){
-                alert("Save, thank you!!");
+               createAlert("Save, thank you!!");
+               $('#exampleModalLong').modal("show");
               }); 
             }
         });
@@ -66,21 +74,21 @@ $(document).on("click", "#scrape", function(event) {
 
        
         // <!-- Modal -->
-        var modal='<div class="modal fade" id="' + value._id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">';
-        modal+='<div class="modal-dialog modal-dialog-centered" role="document">';
-        modal+='<div class="modal-content">';
-        modal+='<div class="modal-header">';
-        modal+='<h5 class="modal-title" id="exampleModalLongTitle">'+value.title+'</h5>';
-        modal+='<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
-        modal+='<span aria-hidden="true">&times;</span></button></div>';
-        modal+='<div class="modal-body">';
-        modal+='<div class="textareaDiv"></div>';
-        // modal+='<textarea></textarea>';
-        modal+='<div class="notas"></div>';
-        modal+='</div>';
-        modal+='<div class="modal-footer">';
-        modal+='<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>'
-        modal+='<button type="button" data-article="' + value._id + '" class="btn btn-primary save-note">Save changes</button></div></div></div></div>';
+        var modal='<div class="modal fade" id="' + value._id + '" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">'+
+                  '<div class="modal-dialog modal-dialog-centered" role="document">'+
+                  '<div class="modal-content">'+
+                  '<div class="modal-header">'+
+                  '<h5 class="modal-title" id="exampleModalLongTitle">'+value.title+'</h5>'+
+                  '<button type="button" class="close" data-dismiss="modal" aria-label="Close">'+
+                  '<span aria-hidden="true">&times;</span></button></div>'+
+                  '<div class="modal-body">'+
+                  '<div class="textareaDiv">'+
+                  '<textarea class="textArea"></textarea></div>'+
+                  '<div class="notas"></div>'+
+                  '</div>'+
+                  '<div class="modal-footer">'+
+                  '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>'+
+                  '<button type="button" data-article="' + value._id + '" class="btn btn-primary save-note">Save changes</button></div></div></div></div>';
             
         $("#savedArticles").append(html);  
         $("#savedArticles").append(modal); 
@@ -107,13 +115,13 @@ $(document).on("click", "#scrape", function(event) {
         var thisid = $(this).attr("data-article");
        
         var note={
-            body:$("textarea").val()
+            body:$(".textArea").val().trim()
         };
        
         console.log(note);
         $.post("/submitNote/"+ thisid, note).then(function(data) {
-           // $("textarea").val("");
-          // console.log(data);
+            $(".textArea").val("");
+             console.log(data);
           });
          
           getNotas(thisid);
@@ -127,15 +135,11 @@ $(document).on("click", "#scrape", function(event) {
             var thisId=$(this).attr("data-target");
             var cadena=thisId.split("#");
             var id=cadena[1];
-            $(".textareaDiv").empty();
-            var modal='<textarea></textarea>';
-            $(".textareaDiv").append(modal);
-            // $("#notas").empty();
             getNotas(id);
         });
 
         function getNotas(id){
-            // $("textarea").val("");
+          // $("textarea").val("");
            $(".notas").empty();
             $.get("/articlesNote/"+id).then(function(data) {
                 var notas=data[0].notes;
@@ -148,13 +152,13 @@ $(document).on("click", "#scrape", function(event) {
         function RenderNote(val, id){
       
             var  rowShow = "<tr>" +
-            "<td>" + val.body + "</td>" +
-            "<td>" +
-            "<button class='btn btn-danger borrar' data-id='" + val._id + "' onclick=deleteNote('" + val._id+"','"+ id + "')>" +
-            "<i class='fa fa-trash'></i>" +
-            "</button>" +
-            "</td>" +
-            "</tr>";
+                            "<td>" + val.body + "</td>" +
+                            "<td>" +
+                             "<button class='btn btn-danger borrar' data-id='" + val._id + "' onclick=deleteNote('" + val._id+"','"+ id + "')>" +
+                             "<i class='fa fa-trash'></i>" +
+                             "</button>" +
+                             "</td>" +
+                            "</tr>";
             $(".notas").append(rowShow);
         }
 
@@ -163,7 +167,7 @@ $(document).on("click", "#scrape", function(event) {
                 method:'DELETE',
                 url:'/noteDelete/'+id,
             }).then(function(data) {
-               console.log("delete");
+               //console.log("delete");
                $(".notas").empty();
                getNotas(idArticle);
             });
@@ -193,7 +197,9 @@ $(document).on("click", "#scrape", function(event) {
                 method:'DELETE',
                 url:'/articles/'+thisid,
             }).then(function(data) {
-               console.log("delete Article");
+               //console.log("delete Article");
+               createAlert("Article deleted");
+               $('#exampleModalLong').modal("show");
                $.get("/articles").then(function(data) {
                 $("#savedArticles").empty();
                 data.forEach(function(val){
@@ -203,7 +209,22 @@ $(document).on("click", "#scrape", function(event) {
             
             });
         });          
-    });    
+    }); 
+    
+    //function alert
+    function createAlert(txt){
+        var html='<div class="modal-content">'+
+                 '<div class="modal-header">'+ 
+                 '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>'+
+                 '</div>'+
+                 '<div class="modal-body">'+   
+                 '<p>'+txt+'</p></div>'+
+                 '<div class="modal-footer">'+
+                 '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'+
+                 '</div></div></div>';
+                 $("#divContent").empty();    
+                 $("#divContent").append(html);                               
+    }
 
 
  

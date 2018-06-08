@@ -22,13 +22,6 @@ var exphbs = require("express-handlebars");
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 
-// Require all models
-var db = require("./models");
-
-// Connect to the Mongo DB
-//mongoose.connect("mongodb://localhost/mongoHeadlines");
-
-
 //Enviromentally aware DB.
 var db = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
